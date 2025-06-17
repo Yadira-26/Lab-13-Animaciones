@@ -3,8 +3,8 @@ package com.example.lab13_animaciones
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    CambioDeColorAnimado()
+                    AnimacionTamanioYPosicion()
                 }
             }
         }
@@ -32,31 +32,39 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CambioDeColorAnimado() {
-    var isBlue by remember { mutableStateOf(true) }
+fun AnimacionTamanioYPosicion() {
+    var isExpanded by remember { mutableStateOf(false) }
 
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isBlue) Color(0xFF2196F3) else Color(0xFF4CAF50),
-        animationSpec = tween(durationMillis = 2000),
+    val boxSize by animateDpAsState(
+        targetValue = if (isExpanded) 200.dp else 100.dp,
+        animationSpec = tween(durationMillis = 600),
+        label = "boxSize"
+    )
+
+    val offsetX by animateDpAsState(
+        targetValue = if (isExpanded) 100.dp else 0.dp,
+        animationSpec = tween(durationMillis = 600),
+        label = "offsetX"
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { isBlue = !isBlue }) {
-            Text(text = "Cambiar color")
+        Button(onClick = { isExpanded = !isExpanded }) {
+            Text(text = "Mover y cambiar tamaño")
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Box(
             modifier = Modifier
-                .size(200.dp)
-                .background(backgroundColor)
+                .offset(x = offsetX, y = 0.dp)
+                .size(boxSize)
+                .background(Color.Magenta)
         )
     }
 }
