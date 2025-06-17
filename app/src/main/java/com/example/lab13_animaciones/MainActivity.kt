@@ -3,17 +3,21 @@ package com.example.lab13_animaciones
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.lab13_animaciones.ui.theme.Lab13AnimacionesTheme
+
+enum class EstadoPantalla {
+    CARGANDO,
+    CONTENIDO,
+    ERROR
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,47 +28,53 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AnimacionTamanioYPosicion()
+                    CambioDeContenido()
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimacionTamanioYPosicion() {
-    var isExpanded by remember { mutableStateOf(false) }
-
-    val boxSize by animateDpAsState(
-        targetValue = if (isExpanded) 200.dp else 100.dp,
-        animationSpec = tween(durationMillis = 600),
-        label = "boxSize"
-    )
-
-    val offsetX by animateDpAsState(
-        targetValue = if (isExpanded) 100.dp else 0.dp,
-        animationSpec = tween(durationMillis = 600),
-        label = "offsetX"
-    )
+fun CambioDeContenido() {
+    var estado by remember { mutableStateOf(EstadoPantalla.CARGANDO) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { isExpanded = !isExpanded }) {
-            Text(text = "Mover y cambiar tamaño")
+
+        AnimatedContent(
+            targetState = estado,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(500)) togetherWith
+                        fadeOut(animationSpec = tween(500))
+            },
+            label = "animacionContenido"
+        ) { targetEstado ->
+            when (targetEstado) {
+                EstadoPantalla.CARGANDO -> Text("Cargando datos...")
+                EstadoPantalla.CONTENIDO -> Text("Contenido cargado correctamente ✅")
+                EstadoPantalla.ERROR -> Text("¡Error al cargar! ❌")
+            }
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
-        Box(
-            modifier = Modifier
-                .offset(x = offsetX, y = 0.dp)
-                .size(boxSize)
-                .background(Color.Magenta)
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Button(onClick = { estado = EstadoPantalla.CARGANDO }) {
+                Text("Cargando")
+            }
+            Button(onClick = { estado = EstadoPantalla.CONTENIDO }) {
+                Text("Contenido")
+            }
+            Button(onClick = { estado = EstadoPantalla.ERROR }) {
+                Text("Error")
+            }
+        }
     }
 }
