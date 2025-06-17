@@ -57,7 +57,7 @@ fun CambioDeContenido() {
             label = "animacionContenido"
         ) { targetEstado ->
             when (targetEstado) {
-                EstadoPantalla.CARGANDO -> Text("Cargando datos...")
+                EstadoPantalla.CARGANDO -> Text("Cargando datos... por favor espera")
                 EstadoPantalla.CONTENIDO -> Text("Contenido cargado correctamente ✅")
                 EstadoPantalla.ERROR -> Text("¡Error al cargar! ❌")
             }
