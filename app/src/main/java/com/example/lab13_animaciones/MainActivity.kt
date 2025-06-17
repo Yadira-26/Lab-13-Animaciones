@@ -1,9 +1,9 @@
-package com.example.lab13_animaciones  // Asegúrate de que sea el nombre correcto
+package com.example.lab13_animaciones
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    VisibilidadAnimada()
+                    CambioDeColorAnimado()
                 }
             }
         }
@@ -32,32 +32,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun VisibilidadAnimada() {
-    var visible by remember { mutableStateOf(false) }
+fun CambioDeColorAnimado() {
+    var isBlue by remember { mutableStateOf(true) }
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isBlue) Color(0xFF2196F3) else Color(0xFF4CAF50),
+        animationSpec = tween(durationMillis = 2000),
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(onClick = { visible = !visible }) {
-            Text(text = if (visible) "Ocultar cuadro" else "Mostrar cuadro")
+        Button(onClick = { isBlue = !isBlue }) {
+            Text(text = "Cambiar color")
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        AnimatedVisibility(
-            visible = visible,
-            enter = fadeIn(animationSpec = tween(2000)) + scaleIn(animationSpec = tween(2000)),
-            exit = fadeOut(animationSpec = tween(2000)) + scaleOut(animationSpec = tween(2000))
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .background(Color.Red)
-            )
-        }
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .background(backgroundColor)
+        )
     }
 }
