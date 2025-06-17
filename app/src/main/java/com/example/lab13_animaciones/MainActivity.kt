@@ -1,29 +1,30 @@
-package com.example.lab13_animaciones
+package com.example.lab13_animaciones  // Asegúrate de que sea el nombre correcto
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.example.lab13_animaciones.ui.theme.Lab13AnimacionesTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             Lab13AnimacionesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    VisibilidadAnimada()
                 }
             }
         }
@@ -31,17 +32,32 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun VisibilidadAnimada() {
+    var visible by remember { mutableStateOf(false) }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Lab13AnimacionesTheme {
-        Greeting("Android")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Button(onClick = { visible = !visible }) {
+            Text(text = if (visible) "Ocultar cuadro" else "Mostrar cuadro")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(animationSpec = tween(2000)) + scaleIn(animationSpec = tween(2000)),
+            exit = fadeOut(animationSpec = tween(2000)) + scaleOut(animationSpec = tween(2000))
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(150.dp)
+                    .background(Color.Red)
+            )
+        }
     }
 }
